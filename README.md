@@ -5,16 +5,29 @@ This repo contains a sample code to show how to create a Flask API server by dep
 If you'd like to learn how to deploy to Heroku, then check [this repo](https://github.com/avinassh/pytorch-flask-api-heroku).
 
 
+## API 정의
+- 이미지가 포함된 file 매개변수를 HTTP POST로 /predict에 request하고 다음과 같은 예측 결과를 JSON 형태로 response함
+
+```
+{"top2_class":['a', 'b'], "top2_percent":[0.3, 0.1]}
+``` 
+
+
 ## How to 
 
 Install the dependencies:
 
+```
     pip install -r requirements.txt
+
+```
 
 
 Run the Flask server:
+```
+    flask run
 
-    FLASK_ENV=development FLASK_APP=app.py flask run
+```
 
 
 From another tab, send the image file in a request:
