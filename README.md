@@ -18,6 +18,10 @@ If you'd like to learn how to deploy to Heroku, then check [this repo](https://g
 Install the dependencies:
 
 ```
+    conda create --name ENVNAME python==3.9
+    conda activate ENVNAME
+    git clone REPOURL
+    cd REPOFOLDER
     pip install -r requirements.txt
 
 ```

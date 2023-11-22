@@ -52,11 +52,10 @@ with open("./sample.jpg", 'rb') as f:
     image_bytes = f.read()
     print(get_prediction(image_bytes=image_bytes))
 
-# POST 요청
-import requests
-
-resp = requests.post("http://localhost:5000/predict",
-                     files={"file": open('sample.jpg','rb')})
+# # POST 요청
+# import requests
+# resp = requests.post("http://localhost:5000/predict",
+#                      files={"file": open('sample.jpg','rb')})
 
 # flask 서버 실행 코드
 if __name__ == '__main__':
