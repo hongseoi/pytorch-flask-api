@@ -30,14 +30,12 @@ def get_prediction(image_bytes):
     _, y_hat = outputs.max(1)
     predicted_idx = str(y_hat.item())
     class_probs = outputs.cpu().data.numpy()[0]
-    print(len(class_probs))
-    print(class_probs)
     top_2_idxes = class_probs.argsort()[-2:][::-1]
     top_2_idxes = [idx if 0 <= idx < len(classes) else 0 for idx in top_2_idxes]
-    print(top_2_idxes)
     top_2_classes = [classes[i] for i in top_2_idxes]
     print(top_2_classes)
     top_2_probs = class_probs[top_2_idxes]
+    print(top_2_probs)
     return top_2_classes, top_2_probs
 
 
