@@ -1,7 +1,7 @@
 import requests
 
 # POST 요청
-with open('./sample.jpg', 'rb') as file:
+with open('./test2.jpg', 'rb') as file:
     resp = requests.post("http://localhost:5000/predict", files={"file": file})
 
 # 응답 확인

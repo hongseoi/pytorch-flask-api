@@ -13,11 +13,11 @@ state_dict = torch.load("model_v1.pth", map_location=torch.device('cpu'))
 class ImageClassificationBase(nn.Module):
   
   def transform_image(image_bytes):
+    image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
     my_transforms = transforms.Compose([transforms.Resize(128),
                                         #transforms.CenterCrop(),
                                         transforms.ToTensor(),
                                         ])
-    image = Image.open(io.BytesIO(image_bytes))
     return my_transforms(image).unsqueeze(0)
   
 
@@ -55,7 +55,7 @@ class Plant_Disease_Model2(ImageClassificationBase):
     self.network = models.resnet34(weights=None)
 
     num_ftrs = self.network.fc.in_features
-    self.network.fc = nn.Linear(num_ftrs, 38)
+    self.network.fc = nn.Linear(num_ftrs, 28)
     
   def forward(self,xb):
     out = self.network(xb)
