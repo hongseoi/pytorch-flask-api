@@ -16,10 +16,24 @@ classes = ['bean__bean_spot', 'bean__blight', 'bean__brown_spot', 'bean__healthy
 # 모델을 훈련할 때 사용한 클래스 수가 28이라면,
 print(len(classes))
 
-# 모델 불러오고 evaluation 상태로 지정
-model = md.Plant_Disease_Model2()
-model.eval()
+# 모델 로드
+state_dict1 = torch.load("./models/s1_binary_class.pth", map_location=torch.device('cpu'))
+state_dict2 = torch.load("./models/s3_disease_class.pth", map_location=torch.device('cpu'))
 
+# 모델 불러오고 evaluation 상태로 지정
+model1 = md.Plant_Disease_Model()
+model2 = md.Plant_Disease_Model2()
+
+model1.load_state_dict(state_dict1)
+model1.eval()
+
+model2.load_state_dict(state_dict2)
+model2.eval()
+
+transform = transforms.Compose([
+    transforms.Resize(size=128),
+    transforms.ToTensor(),
+])
 
 # 예측 결과 불러오기
 def get_prediction(image_bytes):
@@ -30,21 +44,44 @@ def get_prediction(image_bytes):
         - top_2_probs: [32, 12]
     """
     tensor = pdm.transform_image(image_bytes=image_bytes)
-    outputs = model(tensor)
-    probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
 
-# 상위 2개 클래스 및 확률 출력
-    top2_probabilities, top2_classes = torch.topk(probabilities, 2)
-    top2_classes = top2_classes.tolist()    # 텐서를 리스트로
+    with torch.no_grad():
+       image = Image.open("test2.jpg")
+       image = transform(image)
+       #image = image[:,:128,:]
+       image = torch.unsqueeze(image, 0)
+       output1 = model1(image)
+       pred_class = output1.argmax()
+       print(pred_class)
+       
+       if pred_class.item() == 0: # 식물 아닌 경우print("식물 아님")
+        print("식물아님")
 
-    print("class:", top2_classes, "probs:", top2_probabilities)
-    for i in range(top2_probabilities.size(0)):
-        class_idx = top2_classes[i]
-        class_name = classes[class_idx]
-        probability = top2_probabilities[i].item()
-    print(f"상위 {i + 1} 클래스: {class_name}, 확률: {probability:.2%}")
-    return class_name, probability
-    
+        top1_class, top2_class = "식물아님"
+        top_probs = [100, 100]
+        print(top1_class, top2_class)
+
+       if pred_class.item() == 1: # 식물인경우
+        print("식물임")
+
+        output2 = model2(image)
+        _, preds = torch.topk(output2, 2)
+        probs = torch.nn.functional.softmax(output2, dim=1)[0,  preds[0]]
+        print(preds, probs)
+        print(probs.shape)
+
+        top_classes = preds.tolist()
+        top_probs = probs.tolist()
+
+        print(top_classes, top_probs)
+
+        top1_class = classes[top_classes[0][0]]
+        top2_class = classes[top_classes[0][1]]
+
+        print(top1_class, top2_class)
+
+    return top1_class, top2_class, top_probs 
+
 
 @app.route('/')
 def index():
@@ -55,8 +92,8 @@ def predict():
     if request.method == 'POST':
         file = request.files['file']
         img_bytes = file.read()
-        class_name, class_probs = get_prediction(image_bytes=img_bytes)
-        return jsonify({"top2_class":class_name, "top2_percent":class_probs})
+        class1_name, class2_name, class_probs = get_prediction(image_bytes=img_bytes)
+        return jsonify({"top1_class":class1_name, "top2_class":class2_name, "top1_percent":class_probs[0], "top2_percent":class_probs[1]})
 
 # 예시(지워도됨)
 with open("./test1.jpg", 'rb') as f:
