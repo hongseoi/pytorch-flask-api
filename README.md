@@ -9,7 +9,7 @@ If you'd like to learn how to deploy to Heroku, then check [this repo](https://g
 - 이미지가 포함된 file 매개변수를 HTTP POST로 /predict에 request하고 다음과 같은 예측 결과를 JSON 형태로 response함
 
 ```
-{"top2_class":['a', 'b'], "top2_percent":[0.3, 0.1]}
+{"top1_class":'a', "top2_percent":0.3, "top2_class":'b', "top2_percent":0.1}
 ``` 
 
 
