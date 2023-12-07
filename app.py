@@ -44,6 +44,9 @@ def get_prediction(image_bytes):
         - top_2_probs: [32, 12]
     """
     tensor = pdm.transform_image(image_bytes=image_bytes)
+    top1_lst = []
+    top2_lst = []
+    probs_lst = []
 
     with torch.no_grad():
        image = Image.open("test2.jpg")
@@ -80,7 +83,11 @@ def get_prediction(image_bytes):
 
         print(top1_class, top2_class)
 
-    return top1_class, top2_class, top_probs 
+    top1_lst.append(top1_class)
+    top2_lst.append(top2_class)
+    probs_lst.append(top_probs)
+
+    return top1_lst, top2_lst, probs_lst
 
 
 @app.route('/')
